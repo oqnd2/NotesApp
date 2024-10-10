@@ -32,8 +32,8 @@ const MyNavbar = () => {
                     </Dropdown>
                 ) : (
                     <>
-                        <Button href='/register' variant="outline-light" className='ms-auto'>Register</Button>
-                        <Button href='/login' variant="light" className="ms-2">Login</Button>
+                        <Button href='/register' variant="outline-light" className='ms-auto'>Registrarse</Button>
+                        <Button href='/login' variant="light" className="ms-2">Iniciar Sesión</Button>
                     </>
                 )}
             </Container>

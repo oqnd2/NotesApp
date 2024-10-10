@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const User = require('./models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Note = require('./models/noteModel');
 
 const JWT_SECRET = 'notesapp';
 
@@ -58,7 +59,7 @@ app.post('/login', async (req, res) =>{
 
         const user = await User.findOne({email});
         if (!user){
-            return res.status(400).json({error: 'No hay una cuenta registrada con esta direccion de correo'})
+            return res.status(400).json({error: 'No hay una cuenta registrada con esta direccion de correo'});
         }
 
         const passwordIsValid = await bcrypt.compare(password, user.password);
@@ -69,10 +70,61 @@ app.post('/login', async (req, res) =>{
 
         const token = jwt.sign({ userId: user._id, userName: user.name }, JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({token, name: user.name, message: 'Inicio de sesión exitoso.'});
+        res.json({token, name: user.name, id: user._id, message: 'Inicio de sesión exitoso.'});
 
     }catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({error: err.message});
+    }
+});
+
+//Ruta para crear nota
+app.post('/addnote', async (req,res) => {
+    try{
+        const { userId, title, note } = req.body;
+
+        const newNote = new Note({
+            title,
+            note,
+            userId
+        });
+
+        try {
+            await newNote.save();
+            res.status(201).json({message: 'Nota creada con éxito'});
+        }catch (err){
+            res.status(500).json({error: err.message});
+        }
+    }catch (err){
+        res.status(400).json({error: err.message});
+    }
+});
+
+app.post('/notes', async (req,res) => {
+    try{
+        const userId = req.body.userId;
+
+        const notes = await Note.find({userId});
+
+        res.json(notes);
+    }catch (err){
+        res.status(400).json({error: err.message});
+    }
+});
+
+app.post('/deletenote', async (req, res) => {
+    const noteId = req.body.noteId;
+
+    try{
+        const result = await Note.findByIdAndDelete(noteId);
+
+        if(!result){
+            return res.status(404).json({ error: 'Nota no encontrada' });
+        }
+
+        res.json({ message: 'Nota eliminada con éxito' });
+        
+    }catch (err){
+        res.status(400).json({error: err.message});
     }
 })
 

@@ -25,6 +25,7 @@ function Login() {
             // Guardar el token.
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userName', response.data.name);
+            localStorage.setItem('userId', response.data.id);
 
             // Redirigir al usuario a la página deseada después del inicio de sesión.
             navigate('/notes'); 
