@@ -1,6 +1,6 @@
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import MyNavbar from '../components/myNavbar'
-import { Form, Button, Container } from 'react-bootstrap';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
 import '../index.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
@@ -8,37 +8,38 @@ import axios from 'axios'
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-    
+        setError(null);
+
         try {
             const response = await axios.post('http://localhost:5000/login', {
                 email,
                 password
             });
-    
-            // Guardar el token (por ejemplo, en localStorage)
+
+            // Guardar el token.
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userName', response.data.name);
-    
-            alert(response.data.message);
-    
-            // Redirigir al usuario a la página deseada después del inicio de sesión
-            navigate('/');  // Cambia '/dashboard' por la ruta a la que quieres redirigir
-    
+
+            // Redirigir al usuario a la página deseada después del inicio de sesión.
+            navigate('/notes'); 
+
         } catch (err) {
-            alert(`Error: ${err.response?.data?.error}`);
+            setError(`Error: ${err.response?.data?.error}`);
         }
     };
 
     return (
         <div className='fondo'>
             <MyNavbar />
-            <Container style={{ minHeight: 'calc(100vh - 56px)'}} className="d-flex justify-content-center align-items-center">
+            <Container style={{ minHeight: 'calc(100vh - 56px)' }} className="d-flex justify-content-center align-items-center">
                 <Form onSubmit={handleLogin} style={{ width: '300px' }} className="text-white p-4 rounded bg-dark">
+                    {error && <Alert variant='danger' className=''>{error}</Alert>}
                     <h2 className="text-center mb-4">Iniciar sesión</h2>
                     <Form.Group className="mb-3">
                         <Form.Label>Correo electronico:</Form.Label>
@@ -61,6 +62,9 @@ function Login() {
                     <Button type="submit" variant="outline-light" className="w-100">
                         Ingresar
                     </Button>
+                    <p className="text-center text-light mt-3">
+                        ¿No tienes una cuenta? <a href="/register" className="text-decoration-none">Crea una!</a>
+                    </p>
                 </Form>
             </Container>
         </div>

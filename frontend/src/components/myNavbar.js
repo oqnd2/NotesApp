@@ -26,7 +26,7 @@ const MyNavbar = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu align="end">
-                            <Dropdown.Item href={''}>Notas</Dropdown.Item>
+                            <Dropdown.Item href='/notes'>Notas</Dropdown.Item>
                             <Dropdown.Item href='/' onClick={handleLogout}>Cerrar Sesión</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MyNavbar from '../components/myNavbar';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,10 +9,12 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVerif, setPasswordVerif] = useState('');
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
 
         if (password !== passwordVerif) {
             alert('Las contraseñas no coinciden!');
@@ -29,7 +31,7 @@ function Register() {
             alert(response.data.message);
             navigate('/login');
         } catch (err) {
-            alert(`Error: ${err.response?.data?.error || 'Error en el registro'}`);
+            setError(`Error: ${err.response?.data?.error || 'Error en el registro'}`);
         }
     };
 
@@ -38,6 +40,7 @@ function Register() {
             <MyNavbar />
             <Container style={{ minHeight: 'calc(100vh - 56px)' }} className="d-flex justify-content-center align-items-center">
                 <Form onSubmit={handleSubmit} style={{ width: '300px' }} className="text-white p-4 rounded bg-dark">
+                    {error && <Alert variant='danger' className=''>{error}</Alert>}
                     <h2 className="text-center mb-4">¡Regístrate!</h2>
                     <Form.Group className="mb-3">
                         <Form.Label>Nombre:</Form.Label>
