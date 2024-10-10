@@ -99,6 +99,7 @@ app.post('/addnote', async (req,res) => {
     }
 });
 
+//Ruta para consultar las notas
 app.post('/notes', async (req,res) => {
     try{
         const userId = req.body.userId;
@@ -111,6 +112,7 @@ app.post('/notes', async (req,res) => {
     }
 });
 
+//Ruta para eliminar una nota
 app.post('/deletenote', async (req, res) => {
     const noteId = req.body.noteId;
 

@@ -19,6 +19,7 @@ function Notes() {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    //Consultar las notas
     const fetchNotes = useCallback(async () => {
         try {
             const response = await axios.post('http://localhost:5000/notes', {
@@ -29,8 +30,9 @@ function Notes() {
         } catch (err) {
             alert(`Error: ${err.response?.data?.error || 'Error al crear la nota'}`);
         }
-    }, [userId]); // Asegúrate de que userId es una dependencia aquí
+    }, [userId]);
 
+    //Agregar una nota
     const handleAddNote = async (e) => {
         e.preventDefault();
 
@@ -49,6 +51,7 @@ function Notes() {
         }
     }
 
+    //Eliminar una nota
     const handleDeleteNote = async (noteId) => {
         try {
             const response = await axios.post('http://localhost:5000/deletenote', {
@@ -65,9 +68,9 @@ function Notes() {
 
     useEffect(() => {
         if (!userId) {
-            navigate('/login');
+            navigate('/login'); //Si no esta logueado, se redirige al inicio de sesión
         } else {
-            fetchNotes();
+            fetchNotes(); 
         }
     }, [userId, navigate, fetchNotes]);
 
