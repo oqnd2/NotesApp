@@ -130,6 +130,23 @@ app.post('/deletenote', async (req, res) => {
     }
 })
 
+//Ruta para editar una nota
+app.post('/editnote', async (req, res) => {
+    const {noteId, title, note} = req.body;
+
+    try{
+        const editNote = await Note.findByIdAndUpdate(noteId, {title, note}, {new: true});
+
+        if (!editNote){
+            return res.status(404).json({error: 'Nota no encontrada'});
+        }
+
+        res.json({message : 'Nota actualizada con éxito'});
+    }catch (err){
+        res.status(400).json({error: err.message});
+    }
+})
+
 // Mensaje de inicio
 app.listen(PORT, () => {
     console.log('Server is running on port ', PORT);

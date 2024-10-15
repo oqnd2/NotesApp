@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import MyNavbar from '../components/myNavbar';
 import { useNavigate } from 'react-router-dom';
 import FloatingButton from '../components/floatingButton';
-import { Button, Card, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Card, Form, Modal } from 'react-bootstrap';
 import trash from '../assets/trash.png'
+import edit from '../assets/pencil.png'
 import axios from 'axios';
 
 function Notes() {
@@ -12,11 +13,20 @@ function Notes() {
     const [show, setShow] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
+    const [error, setError] = useState(null);
     const [notes, setNotes] = useState([]);
+    const [editNoteId, setEditNoteId] = useState(null);
 
     const navigate = useNavigate();
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false);
+        setError(null);
+        setEditNoteId(null);
+        setNote('');
+        setTitle('');
+    }
+
     const handleShow = () => setShow(true);
 
     //Consultar las notas
@@ -35,6 +45,16 @@ function Notes() {
     //Agregar una nota
     const handleAddNote = async (e) => {
         e.preventDefault();
+
+        if (title === '') {
+            setError('Debes ponerle un título a la nota');
+            return;
+        } else if (note === '') {
+            setError('Debes ponerle contenido a la nota');
+            return;
+        }
+
+        setError('');
 
         try {
             const response = await axios.post('http://localhost:5000/addnote', {
@@ -66,11 +86,45 @@ function Notes() {
         }
     }
 
+    //Mostrar datos de la nota para su edición
+    const showNoteData = (note) => {
+        setEditNoteId(note._id);
+        setTitle(note.title);
+        setNote(note.note);
+        handleShow();
+    }
+
+    const handleEditNote = async (noteId) => {
+        if (title === '') {
+            setError('Debes ponerle un título a la nota');
+            return;
+        } else if (note === '') {
+            setError('Debes ponerle contenido a la nota');
+            return;
+        }
+
+        setError('');
+
+        try{
+            const response = await axios.post('http://localhost:5000/editnote', {
+                noteId,
+                title,
+                note
+            });
+
+            alert(response.data.message);
+            handleClose();
+            fetchNotes();
+        }catch(err){
+            setError(`Error: ${err.response?.data?.error || 'Error al editar la nota'}`);
+        }
+    }
+
     useEffect(() => {
         if (!userId) {
             navigate('/login'); //Si no esta logueado, se redirige al inicio de sesión
         } else {
-            fetchNotes(); 
+            fetchNotes();
         }
     }, [userId, navigate, fetchNotes]);
 
@@ -80,10 +134,15 @@ function Notes() {
             <FloatingButton onClick={handleShow} />
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Agregar una nota</Modal.Title>
+                    {editNoteId ? (
+                        <Modal.Title>Editar nota</Modal.Title>
+                    ) : (
+                        <Modal.Title>Agregar una nota</Modal.Title>
+                    )}
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleAddNote}>
+                    <Form>
+                        {error && <Alert variant='danger' className=''>{error}</Alert>}
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Titulo:</Form.Label>
                             <Form.Control
@@ -109,9 +168,17 @@ function Notes() {
                             <Button variant="secondary" onClick={handleClose}>
                                 Cancelar
                             </Button>
-                            <Button className='blue' type="submit">
-                                Agregar nota
-                            </Button>
+                            {editNoteId ? (
+                                <Button className='blue' onClick={() => handleEditNote(editNoteId)}>
+                                    Editar nota
+                                </Button>
+                            ) : (
+                                <Button className='blue' onClick={handleAddNote}>
+                                    Agregar nota
+                                </Button>
+                            )
+                            }
+
                         </Modal.Footer>
                     </Form>
                 </Modal.Body>
@@ -139,8 +206,11 @@ function Notes() {
                                     <Card.Text>
                                         {note.note}
                                     </Card.Text>
-                                    <Button variant="danger" onClick={() => handleDeleteNote(note._id)}>
+                                    <Button variant="danger" className='me-3' onClick={() => handleDeleteNote(note._id)}>
                                         <img alt='Delete' src={trash} style={{ width: '20px' }} />
+                                    </Button>
+                                    <Button variant="primary" onClick={() => showNoteData(note)}>
+                                        <img alt='Edit' src={edit} style={{ width: '20px' }} />
                                     </Button>
                                 </Card.Body>
                             </Card>
