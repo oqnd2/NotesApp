@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import MyNavbar from '../components/myNavbar'
 import { Form, Button, Container, Alert } from 'react-bootstrap';
 import '../index.css'
@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 function Login() {
+    const userId = localStorage.getItem('userId');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -28,12 +30,18 @@ function Login() {
             localStorage.setItem('userId', response.data.id);
 
             // Redirigir al usuario a la página deseada después del inicio de sesión.
-            navigate('/notes'); 
+            navigate('/notes');
 
         } catch (err) {
             setError(`Error: ${err.response?.data?.error}`);
         }
     };
+
+    useEffect(() => {
+        if (userId) {
+            navigate('/');
+        }
+    });
 
     return (
         <div className='fondo'>

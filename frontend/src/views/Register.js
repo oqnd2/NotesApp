@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MyNavbar from '../components/myNavbar';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
+    const userId = localStorage.getItem('userId');
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -34,6 +36,12 @@ function Register() {
             setError(`Error: ${err.response?.data?.error || 'Error en el registro'}`);
         }
     };
+
+    useEffect(() => {
+        if(userId){
+            navigate('/');
+        }
+    })
 
     return (
         <div className='fondo'>

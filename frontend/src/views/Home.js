@@ -5,7 +5,6 @@ function Home() {
   return (
     <div className='fondo'>
       <MyNavbar />
-      <p>Home</p>
     </div>
   );
 }

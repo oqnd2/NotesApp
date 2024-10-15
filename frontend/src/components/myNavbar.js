@@ -9,6 +9,7 @@ const MyNavbar = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
+        localStorage.removeItem('userId');
         window.location.reload(); // Recargar la página para actualizar el navbar
     };
 
