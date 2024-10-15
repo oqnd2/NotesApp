@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import MyNavbar from '../components/myNavbar';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
     const userId = localStorage.getItem('userId');
 
+    const [show, setShow] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,19 +20,19 @@ function Register() {
         setError(null);
 
         if (password !== passwordVerif) {
-            alert('Las contraseñas no coinciden!');
+            setError('Las contraseñas no coinciden!');
             return;
         }
 
         try {
             const response = await axios.post('http://localhost:5000/register', {
                 name,
-                email,
+                email: email.toLowerCase(),
                 password
             });
 
-            alert(response.data.message);
-            navigate('/login');
+            setShow(true);
+            console.log(response.data.message);
         } catch (err) {
             setError(`Error: ${err.response?.data?.error || 'Error en el registro'}`);
         }
@@ -46,6 +47,17 @@ function Register() {
     return (
         <div className='fondo'>
             <MyNavbar />
+            <Modal show={show}>
+                <Modal.Header closeButton>
+                    <Modal.Title>EXITO</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Te has registrado exitosamente</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => navigate('/login')}>
+                        OK
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Container style={{ minHeight: 'calc(100vh - 56px)' }} className="d-flex justify-content-center align-items-center">
                 <Form onSubmit={handleSubmit} style={{ width: '300px' }} className="text-white p-4 rounded bg-dark">
                     {error && <Alert variant='danger' className=''>{error}</Alert>}
