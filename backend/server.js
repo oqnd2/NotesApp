@@ -123,7 +123,7 @@ app.post('/deletenote', async (req, res) => {
             return res.status(404).json({ error: 'Nota no encontrada' });
         }
 
-        res.json({ message: 'Nota eliminada con éxito' });
+        res.json({ message: 'Nota eliminada!' });
         
     }catch (err){
         res.status(400).json({error: err.message});
@@ -141,7 +141,7 @@ app.post('/editnote', async (req, res) => {
             return res.status(404).json({error: 'Nota no encontrada'});
         }
 
-        res.json({message : 'Nota actualizada con éxito'});
+        res.json({message : 'Nota actualizada!'});
     }catch (err){
         res.status(400).json({error: err.message});
     }

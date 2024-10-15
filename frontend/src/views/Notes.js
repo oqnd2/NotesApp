@@ -11,6 +11,7 @@ function Notes() {
     const userId = localStorage.getItem('userId');
 
     const [show, setShow] = useState(false);
+    const [info, setInfo] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
     const [error, setError] = useState(null);
@@ -25,6 +26,14 @@ function Notes() {
         setEditNoteId(null);
         setNote('');
         setTitle('');
+    }
+
+    const handleInfo = (message) => {
+        setInfo(message);
+        
+        setTimeout(() =>{
+            setInfo(false);
+        }, 3000);
     }
 
     const handleShow = () => setShow(true);
@@ -63,7 +72,7 @@ function Notes() {
                 note
             });
 
-            alert(response.data.message);
+            handleInfo(response.data.message);
             handleClose();
             fetchNotes();
         } catch (err) {
@@ -78,7 +87,7 @@ function Notes() {
                 noteId
             });
 
-            alert(response.data.message);
+            handleInfo(response.data.message);
             fetchNotes();
 
         } catch (err) {
@@ -105,17 +114,17 @@ function Notes() {
 
         setError('');
 
-        try{
+        try {
             const response = await axios.post('http://localhost:5000/editnote', {
                 noteId,
                 title,
                 note
             });
 
-            alert(response.data.message);
+            handleInfo(response.data.message);
             handleClose();
             fetchNotes();
-        }catch(err){
+        } catch (err) {
             setError(`Error: ${err.response?.data?.error || 'Error al editar la nota'}`);
         }
     }
@@ -132,6 +141,8 @@ function Notes() {
         <div className='fondo'>
             <MyNavbar />
             <FloatingButton onClick={handleShow} />
+            {info && <Alert variant='info' className='mt-3 mb-3 mx-auto' style={{ width: '80%' }}>{info
+                }</Alert>}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     {editNoteId ? (
